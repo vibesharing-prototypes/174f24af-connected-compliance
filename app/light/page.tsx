@@ -43,6 +43,13 @@ const sections = [
     badge: "Home Screen",
     badgeColor: "#0ea5e9",
   },
+  {
+    title: "WhatsApp Simulation",
+    href: "/whatsapp",
+    description: "What if you could interact with Diligent compliance and risk agents through WhatsApp? Four conversation threads simulate real-time alerts, approvals, group collaboration, and training updates.",
+    badge: "Messaging",
+    badgeColor: "#25d366",
+  },
 ];
 
 export default function IndexPage() {
