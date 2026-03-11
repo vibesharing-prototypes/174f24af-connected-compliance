@@ -37,7 +37,7 @@ const SIGNALS: Signal[] = [
       { text: "Drafted updates for 3 policy sections", time: "1:52 PM", links: [{ label: "See drafts", style: "primary" }] },
       { text: "Sent re-certification requests to 3 regional leads", time: "1:55 PM", links: [{ label: "See status", style: "primary" }, { label: "Rescind", style: "danger" }] },
     ],
-    humanAction: { text: "Review 3 drafted changes (~8 min)", href: "/tasks", label: "Review" },
+    humanAction: { text: "Review 3 drafted changes (~8 min)", href: "/light/tasks", label: "Review" },
     owner: { name: "Elena Vasquez", initials: "EV", role: "Head of Policy", status: "Assigned", time: "1:45 PM" },
   },
   {
@@ -51,7 +51,7 @@ const SIGNALS: Signal[] = [
       { text: "Compiled draft annual report from 6 regions", time: "2:01 PM", links: [{ label: "See draft", style: "primary" }] },
       { text: "Flagged 2 high-priority cases for triage", time: "2:03 PM", links: [{ label: "View cases", style: "primary" }] },
     ],
-    humanAction: { text: "Triage 2 flagged cases before Apr 13", href: "/tasks", label: "Triage" },
+    humanAction: { text: "Triage 2 flagged cases before Apr 13", href: "/light/tasks", label: "Triage" },
     owner: { name: "James Okafor", initials: "JO", role: "Speak Up Lead", status: "Assigned", time: "1:46 PM" },
   },
   {
@@ -65,7 +65,7 @@ const SIGNALS: Signal[] = [
       { text: "Sent reminders to 149 managers", time: "2:12 PM", links: [{ label: "See email", style: "primary" }, { label: "Rescind", style: "danger" }] },
       { text: "Shared regional breakdown with L&D", time: "2:13 PM", links: [{ label: "See report", style: "primary" }] },
     ],
-    humanAction: { text: "Review regional training breakdown", href: "/training", label: "Review" },
+    humanAction: { text: "Review regional training breakdown", href: "/light/training", label: "Review" },
     owner: { name: "Priya Sharma", initials: "PS", role: "L&D Director APAC", status: "Assigned", time: "1:47 PM" },
   },
 ];
@@ -222,29 +222,29 @@ function DiligentLogo({ size = 20 }: { size?: number }) {
 
 function SidebarIcon({ d, active = false }: { d: string; active?: boolean }) {
   return (
-    <div className={`flex items-center justify-center w-8 h-8 rounded-md cursor-pointer transition-colors ${active ? "bg-[#ef4444]" : "hover:bg-[#21262d]"}`}>
-      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={active ? "#fff" : "#8b949e"} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
+    <div className={`flex items-center justify-center w-8 h-8 rounded-md cursor-pointer transition-colors ${active ? "bg-[#dc2626]" : "hover:bg-gray-100"}`}>
+      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={active ? "#fff" : "#6b7280"} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
     </div>
   );
 }
 
 function statusColor(s: TimelineStatus): string {
   switch (s) {
-    case "completed": return "#3fb950";
-    case "today": return "#58a6ff";
-    case "critical": return "#f87171";
-    case "high": return "#fbbf24";
-    case "medium": return "#fb923c";
-    case "upcoming": return "#484f58";
+    case "completed": return "#16a34a";
+    case "today": return "#2563eb";
+    case "critical": return "#dc2626";
+    case "high": return "#d97706";
+    case "medium": return "#ea580c";
+    case "upcoming": return "#9ca3af";
   }
 }
 
 function statusDotStyle(s: TimelineStatus): { bg: string; border: string; size: number } {
   switch (s) {
-    case "today": return { bg: "#58a6ff", border: "#58a6ff", size: 10 };
-    case "critical": return { bg: "#f87171", border: "#f87171", size: 8 };
-    case "high": return { bg: "#fbbf24", border: "#fbbf24", size: 7 };
-    default: return { bg: s === "completed" ? "#3fb950" : "#484f58", border: s === "completed" ? "#3fb95060" : "#30363d", size: 6 };
+    case "today": return { bg: "#2563eb", border: "#2563eb", size: 10 };
+    case "critical": return { bg: "#dc2626", border: "#dc2626", size: 8 };
+    case "high": return { bg: "#d97706", border: "#d97706", size: 7 };
+    default: return { bg: s === "completed" ? "#16a34a" : "#9ca3af", border: s === "completed" ? "#16a34a60" : "#d1d5db", size: 6 };
   }
 }
 
@@ -264,9 +264,9 @@ function ComplianceTimeline() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#21262d]">
-        <h2 className="text-[11px] font-bold uppercase tracking-widest text-[#6e7681]">Compliance Calendar</h2>
-        <span className="text-[9px] text-[#484f58]">Dec 2025 — Jun 2026</span>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e7eb]">
+        <h2 className="text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">Compliance Calendar</h2>
+        <span className="text-[9px] text-[#9ca3af]">Dec 2025 — Jun 2026</span>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-3">
@@ -300,19 +300,19 @@ function ComplianceTimeline() {
                     }}
                   />
                   {i < TIMELINE.length - 1 && (
-                    <div className="w-px flex-1 min-h-[16px]" style={{ background: TIMELINE[i + 1].status === "today" ? "#58a6ff30" : "#21262d" }} />
+                    <div className="w-px flex-1 min-h-[16px]" style={{ background: TIMELINE[i + 1].status === "today" ? "#2563eb30" : "#e5e7eb" }} />
                   )}
                 </div>
 
                 {/* Content */}
                 <div className={`pb-4 flex-1 min-w-0 ${isToday ? "pb-5" : ""}`}>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold tabular-nums" style={{ color: isToday ? "#58a6ff" : isPast ? "#484f58" : color }}>{ev.shortDate}</span>
-                    {isToday && <span className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#58a6ff]/15 text-[#58a6ff] border border-[#58a6ff]/30">Today</span>}
+                    <span className="text-[10px] font-semibold tabular-nums" style={{ color: isToday ? "#2563eb" : isPast ? "#9ca3af" : color }}>{ev.shortDate}</span>
+                    {isToday && <span className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#2563eb]/15 text-[#2563eb] border border-[#2563eb]/30">Today</span>}
                   </div>
                   <p
                     className="text-[11px] mt-0.5 leading-snug cursor-default transition-colors"
-                    style={{ color: isToday ? "#f0f6fc" : isPast ? "#6e7681" : isHovered ? "#f0f6fc" : "#8b949e" }}
+                    style={{ color: isToday ? "#111827" : isPast ? "#6b7280" : isHovered ? "#111827" : "#6b7280" }}
                   >
                     {ev.title}
                   </p>
@@ -320,15 +320,15 @@ function ComplianceTimeline() {
                   {/* Hover popover */}
                   {isHovered && !isToday && (
                     <div
-                      className="mt-2 rounded-lg border bg-[#161b22] p-3 animate-fade-in-up"
+                      className="mt-2 rounded-lg border bg-white p-3 animate-fade-in-up shadow-black/10"
                       style={{ borderColor: `${color}30` }}
                     >
                       <p className="text-[11px] font-semibold mb-1" style={{ color }}>{ev.hoverTitle}</p>
-                      <p className="text-[11px] text-[#8b949e] leading-relaxed">{ev.hoverBody}</p>
+                      <p className="text-[11px] text-[#6b7280] leading-relaxed">{ev.hoverBody}</p>
                       {ev.hoverLinks && ev.hoverLinks.length > 0 && (
                         <div className="flex items-center gap-2 mt-2">
                           {ev.hoverLinks.map((l) => (
-                            <button key={l} className="text-[10px] font-semibold text-[#58a6ff] hover:opacity-80 transition-opacity">{l}</button>
+                            <button key={l} className="text-[10px] font-semibold text-[#2563eb] hover:opacity-80 transition-opacity">{l}</button>
                           ))}
                         </div>
                       )}
@@ -349,43 +349,43 @@ function ComplianceTimeline() {
 /* ------------------------------------------------------------------ */
 
 function SignalCard({ signal }: { signal: Signal }) {
-  const sevColor = signal.severity === "CRITICAL" ? "#f87171" : "#fbbf24";
+  const sevColor = signal.severity === "CRITICAL" ? "#dc2626" : "#d97706";
 
   return (
-    <div className="rounded-xl border border-[#30363d] bg-[#161b22] overflow-hidden">
-      <div className="flex items-center gap-3 px-5 py-3 border-b border-[#21262d]">
+    <div className="rounded-xl border border-[#d1d5db] bg-white overflow-hidden">
+      <div className="flex items-center gap-3 px-5 py-3 border-b border-[#e5e7eb]">
         <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded" style={{ color: sevColor, background: `${sevColor}15`, border: `1px solid ${sevColor}30` }}>
           {signal.severity}
         </span>
-        <h3 className="text-[14px] font-semibold text-[#f0f6fc] flex-1">{signal.title}</h3>
+        <h3 className="text-[14px] font-semibold text-[#111827] flex-1">{signal.title}</h3>
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          <span className="text-[11px] text-[#8b949e]">{signal.due}</span>
-          <span className="text-[11px] font-bold" style={{ color: signal.daysLeft <= 21 ? "#f87171" : "#fbbf24" }}>{signal.daysLeft}d</span>
+          <span className="text-[11px] text-[#6b7280]">{signal.due}</span>
+          <span className="text-[11px] font-bold" style={{ color: signal.daysLeft <= 21 ? "#dc2626" : "#d97706" }}>{signal.daysLeft}d</span>
         </div>
       </div>
 
       <div className="px-5 py-4">
-        <p className="text-[12px] text-[#8b949e] leading-relaxed mb-4">{signal.finding}</p>
+        <p className="text-[12px] text-[#6b7280] leading-relaxed mb-4">{signal.finding}</p>
 
         <div className="flex gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 mb-2.5">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3fb950" strokeWidth="2.5" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#3fb950]">Agent handled</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#16a34a]">Agent handled</span>
             </div>
             <div className="space-y-2">
               {signal.agentActions.map((a, i) => (
                 <div key={i} className="flex gap-2.5">
                   <div className="flex flex-col items-center mt-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#3fb950] flex-shrink-0" />
-                    {i < signal.agentActions.length - 1 && <div className="w-px flex-1 bg-[#21262d] mt-0.5" />}
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#16a34a] flex-shrink-0" />
+                    {i < signal.agentActions.length - 1 && <div className="w-px flex-1 bg-[#e5e7eb] mt-0.5" />}
                   </div>
                   <div className="pb-1.5">
-                    <p className="text-[11px] text-[#c9d1d9] leading-relaxed">{a.text}</p>
+                    <p className="text-[11px] text-[#374151] leading-relaxed">{a.text}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[9px] text-[#484f58]">{a.time}</span>
+                      <span className="text-[9px] text-[#9ca3af]">{a.time}</span>
                       {a.links.map((l, li) => (
-                        <button key={li} className="text-[9px] font-semibold transition-opacity hover:opacity-80" style={{ color: l.style === "primary" ? "#58a6ff" : l.style === "danger" ? "#f8717170" : "#6e7681" }}>
+                        <button key={li} className="text-[9px] font-semibold transition-opacity hover:opacity-80" style={{ color: l.style === "primary" ? "#2563eb" : l.style === "danger" ? "#dc262670" : "#6b7280" }}>
                           {l.label}
                         </button>
                       ))}
@@ -396,25 +396,25 @@ function SignalCard({ signal }: { signal: Signal }) {
             </div>
           </div>
 
-          <div className="w-px bg-[#21262d] flex-shrink-0" />
+          <div className="w-px bg-[#e5e7eb] flex-shrink-0" />
 
           <div className="w-[190px] flex-shrink-0 flex flex-col justify-between">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-7 h-7 rounded-full bg-[#21262d] border border-[#30363d] flex items-center justify-center text-[9px] font-bold text-[#c9d1d9]">{signal.owner.initials}</div>
+              <div className="w-7 h-7 rounded-full bg-[#f3f4f6] border border-[#d1d5db] flex items-center justify-center text-[9px] font-bold text-[#374151]">{signal.owner.initials}</div>
               <div>
-                <p className="text-[11px] font-medium text-[#f0f6fc]">{signal.owner.name}</p>
-                <p className="text-[9px] text-[#484f58]">{signal.owner.role} · <span className="text-[#3fb950]">{signal.owner.status}</span></p>
+                <p className="text-[11px] font-medium text-[#111827]">{signal.owner.name}</p>
+                <p className="text-[9px] text-[#9ca3af]">{signal.owner.role} · <span className="text-[#16a34a]">{signal.owner.status}</span></p>
               </div>
             </div>
 
             {signal.humanAction && (
               <div>
                 <div className="flex items-center gap-1.5 mb-2">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#58a6ff]">You</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#2563eb]">You</span>
                 </div>
-                <p className="text-[11px] text-[#c9d1d9] mb-2">{signal.humanAction.text}</p>
-                <Link href={signal.humanAction.href} className="inline-flex items-center gap-1.5 rounded-md bg-[#1f6feb] hover:bg-[#388bfd] text-white text-[11px] font-semibold px-3 py-1.5 transition-colors">
+                <p className="text-[11px] text-[#374151] mb-2">{signal.humanAction.text}</p>
+                <Link href={signal.humanAction.href} className="inline-flex items-center gap-1.5 rounded-md bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[11px] font-semibold px-3 py-1.5 transition-colors">
                   {signal.humanAction.label}
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                 </Link>
@@ -433,9 +433,9 @@ function SignalCard({ signal }: { signal: Signal }) {
 
 export default function DashboardPage() {
   return (
-    <div className="flex h-screen bg-[#0d1117] text-[#c9d1d9] overflow-hidden">
+    <div className="flex h-screen bg-white text-[#374151] overflow-hidden">
       {/* Left Sidebar */}
-      <aside className="w-12 flex-shrink-0 bg-[#0d1117] border-r border-[#21262d] flex flex-col items-center py-3 gap-4">
+      <aside className="w-12 flex-shrink-0 bg-white border-r border-[#e5e7eb] flex flex-col items-center py-3 gap-4">
         <div className="mb-2"><DiligentLogo size={20} /></div>
         <SidebarIcon d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
         <SidebarIcon d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6M9 14l2 2 4-4" active />
@@ -450,29 +450,29 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Agent ticker */}
-        <div className="flex-shrink-0 border-b border-[#21262d] bg-[#161b22]/50 overflow-hidden">
+        <div className="flex-shrink-0 border-b border-[#e5e7eb] bg-[#f9fafb] overflow-hidden">
           <div className="animate-ticker flex whitespace-nowrap py-2">
             {[...AGENTS, ...AGENTS].map((agent, i) => (
               <div key={i} className="flex items-center gap-2 px-5 text-[11px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#3fb950] flex-shrink-0" />
-                <span className="text-[#c9d1d9] font-medium">{agent.name}</span>
-                <span className="text-[#6e7681]">&middot;</span>
-                <span className="text-[#8b949e]">{agent.detail},</span>
-                <span className="text-[#6e7681]">{agent.time}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a] flex-shrink-0" />
+                <span className="text-[#374151] font-medium">{agent.name}</span>
+                <span className="text-[#6b7280]">&middot;</span>
+                <span className="text-[#6b7280]">{agent.detail},</span>
+                <span className="text-[#6b7280]">{agent.time}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Top Nav */}
-        <header className="h-12 flex-shrink-0 border-b border-[#21262d] flex items-center justify-between px-4">
+        <header className="h-12 flex-shrink-0 border-b border-[#e5e7eb] flex items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#8b949e" strokeWidth={1.8}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
-            <span className="text-sm font-semibold text-[#f0f6fc]">Acme Co.</span>
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth={1.8}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+            <span className="text-sm font-semibold text-[#111827]">Acme Co.</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#8b949e]">Ronald Chen</span>
-            <div className="w-7 h-7 rounded-full bg-[#21262d] border border-[#30363d] flex items-center justify-center text-[10px] font-semibold text-[#c9d1d9]">RC</div>
+            <span className="text-xs text-[#6b7280]">Ronald Chen</span>
+            <div className="w-7 h-7 rounded-full bg-[#f3f4f6] border border-[#d1d5db] flex items-center justify-center text-[10px] font-semibold text-[#374151]">RC</div>
           </div>
         </header>
 
@@ -483,32 +483,32 @@ export default function DashboardPage() {
             <section className="max-w-[900px] mx-auto px-6 pt-6 pb-2 animate-fade-in-up">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-xl font-bold text-[#f0f6fc]">3 compliance deadlines approaching</h1>
+                  <h1 className="text-xl font-bold text-[#111827]">3 compliance deadlines approaching</h1>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#f87171]/15 text-[#f87171] border border-[#f87171]/30">1 Critical</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#fbbf24]/15 text-[#fbbf24] border border-[#fbbf24]/30">2 High</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#dc2626]/15 text-[#dc2626] border border-[#dc2626]/30">1 Critical</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#d97706]/15 text-[#d97706] border border-[#d97706]/30">2 High</span>
                   </div>
                 </div>
-                <span className="text-[11px] text-[#484f58]">Mar 10, 2026</span>
+                <span className="text-[11px] text-[#9ca3af]">Mar 10, 2026</span>
               </div>
-              <p className="text-[13px] text-[#8b949e] mb-5">
+              <p className="text-[13px] text-[#6b7280] mb-5">
                 Your agents detected these deadlines, assigned owners, and started work. Review what they&apos;ve prepared.
               </p>
 
-              <div className="flex items-center gap-6 rounded-lg border border-[#21262d] bg-[#0d1117] px-5 py-3 mb-6">
+              <div className="flex items-center gap-6 rounded-lg border border-[#e5e7eb] bg-[#f9fafb] px-5 py-3 mb-6">
                 <div className="flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3fb950" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
-                  <span className="text-[12px] text-[#c9d1d9]"><span className="font-bold text-[#3fb950]">9</span> agent actions</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                  <span className="text-[12px] text-[#374151]"><span className="font-bold text-[#16a34a]">9</span> agent actions</span>
                 </div>
-                <div className="w-px h-4 bg-[#21262d]" />
+                <div className="w-px h-4 bg-[#e5e7eb]" />
                 <div className="flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                  <span className="text-[12px] text-[#c9d1d9]"><span className="font-bold text-[#58a6ff]">3</span> need your review</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                  <span className="text-[12px] text-[#374151]"><span className="font-bold text-[#2563eb]">3</span> need your review</span>
                 </div>
-                <div className="w-px h-4 bg-[#21262d]" />
+                <div className="w-px h-4 bg-[#e5e7eb]" />
                 <div className="flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b949e" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                  <span className="text-[12px] text-[#8b949e]">~15 min</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                  <span className="text-[12px] text-[#6b7280]">~15 min</span>
                 </div>
               </div>
             </section>
@@ -520,17 +520,17 @@ export default function DashboardPage() {
             </section>
 
             {/* Bottom prompt box */}
-            <div className="fixed bottom-0 left-12 right-[280px] bg-gradient-to-t from-[#0d1117] via-[#0d1117] to-transparent pt-6 pb-4 px-6 z-10">
+            <div className="fixed bottom-0 left-12 right-[280px] bg-gradient-to-t from-white via-white to-transparent pt-6 pb-4 px-6 z-10">
               <div className="max-w-[900px] mx-auto space-y-3">
                 <div className="flex items-center justify-center gap-2 flex-wrap">
                   {["What did the agent do?", "Show me the riskiest deadline", "Prepare a board summary"].map((s) => (
-                    <button key={s} className="text-xs px-3 py-1.5 rounded-full border border-[#30363d] bg-[#161b22] text-[#8b949e] hover:text-[#c9d1d9] hover:border-[#484f58] transition-colors cursor-pointer">{s}</button>
+                    <button key={s} className="text-xs px-3 py-1.5 rounded-full border border-[#d1d5db] bg-white text-[#6b7280] hover:text-[#374151] hover:border-[#9ca3af] transition-colors cursor-pointer">{s}</button>
                   ))}
                 </div>
-                <div className="flex items-center gap-3 bg-[#161b22] border border-[#30363d] rounded-xl px-4 py-3">
+                <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
                   <DiligentLogo size={16} />
-                  <input type="text" placeholder="Ask about your compliance posture" className="flex-1 bg-transparent text-sm text-[#c9d1d9] placeholder-[#6e7681] outline-none" readOnly />
-                  <button className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#238636] hover:bg-[#2ea043] transition-colors cursor-pointer">
+                  <input type="text" placeholder="Ask about your compliance posture" className="flex-1 bg-transparent text-sm text-[#374151] placeholder-[#6b7280] outline-none" readOnly />
+                  <button className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#16a34a] hover:bg-[#22c55e] transition-colors cursor-pointer">
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
                   </button>
                 </div>
@@ -539,7 +539,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Right: Compliance Calendar */}
-          <div className="w-[280px] flex-shrink-0 border-l border-[#21262d] bg-[#0d1117] flex flex-col">
+          <div className="w-[280px] flex-shrink-0 border-l border-[#e5e7eb] bg-white flex flex-col">
             <ComplianceTimeline />
           </div>
         </div>
