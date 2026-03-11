@@ -12,6 +12,7 @@ interface Message {
   time: string;
   read?: boolean;
   card?: { title: string; items: string[] };
+  replyTo?: { from: string; text: string };
 }
 
 interface Conversation {
@@ -23,6 +24,8 @@ interface Conversation {
   lastSeen?: string;
   members?: string;
   unread?: number;
+  preview: string;
+  previewDate: string;
   messages: Message[];
 }
 
@@ -33,6 +36,8 @@ const CONVERSATIONS: Conversation[] = [
     avatar: "D",
     avatarBg: "#00a884",
     lastSeen: "online",
+    preview: "✅ Publication scheduled for April 1, 2026...",
+    previewDate: "1:48 PM",
     messages: [
       { from: "bot", text: "🔔 3 compliance deadlines approaching in the next 30 days. Here's a summary:", time: "1:42 PM" },
       { from: "bot", text: "1. Global Code of Conduct review — due Mar 31 (21 days)\n2. EU Whistleblower Directive reporting — due Apr 24 (45 days)\n3. APAC Training certification — due May 15 (65 days)", time: "1:42 PM" },
@@ -51,6 +56,8 @@ const CONVERSATIONS: Conversation[] = [
     avatar: "D",
     avatarBg: "#f59e0b",
     lastSeen: "online",
+    preview: "✅ Briefing sent to Board Risk Committee...",
+    previewDate: "9:22 AM",
     messages: [
       { from: "bot", text: "⚠️ *Geopolitical signal detected*\n\nTaiwan Strait escalation — military exercises announced near key shipping lanes. This could affect semiconductor supply chains across multiple industries.", time: "9:12 AM" },
       { from: "bot", text: "Here's what I found for Acme:\n\n• *47%* of your semiconductor suppliers operate in the affected region\n• Estimated revenue exposure: *$1.8B*\n• 3 business units directly affected: Hardware, Cloud Infrastructure, Consumer Devices\n• 2 existing controls flagged as insufficient", time: "9:13 AM" },
@@ -68,6 +75,8 @@ const CONVERSATIONS: Conversation[] = [
     avatarBg: "#6366f1",
     isGroup: true,
     members: "Elena Vasquez, Marcus Webb, Katrin Müller, Priya Sharma, You",
+    preview: "Diligent AI: 📋 Summary of this thread...",
+    previewDate: "11:46 AM",
     messages: [
       { from: "Elena Vasquez", text: "Has anyone seen the updated UK Bribery Act guidance? We need to check if our Code of Conduct covers the new requirements.", time: "11:30 AM" },
       { from: "bot", text: "Hi Elena — I flagged this on Nov 15 when the UK Ministry of Justice published the update. It affects Section 4.2 of your Code of Conduct.\n\nI've already drafted updated language that references the new guidance. Want me to share it here?", time: "11:31 AM" },
@@ -85,6 +94,8 @@ const CONVERSATIONS: Conversation[] = [
     avatar: "D",
     avatarBg: "#8b5cf6",
     lastSeen: "online",
+    preview: "Pacific US: 41% → 47% → 52%...",
+    previewDate: "8:18 AM",
     messages: [
       { from: "bot", text: "📊 *Weekly Training Compliance Update*\n\nGlobal completion: 78% (+3% from last week)\nManager completion: 64% (⚠️ below 70% threshold)", time: "8:00 AM" },
       { from: "bot", text: "Regions of concern:\n\n🔴 *Pacific US* — 52% completion, 38% manager completion\n🔴 *Southern Europe* — 58% completion\n🟡 *Southeast Asia* — 65% completion\n\nAll other regions are tracking above 75%.", time: "8:00 AM" },
@@ -97,25 +108,23 @@ const CONVERSATIONS: Conversation[] = [
   },
 ];
 
-/* ================================================================== */
-/*  WhatsApp UI Components                                             */
-/* ================================================================== */
-
-function WACheckmarks({ read }: { read?: boolean }) {
-  return (
-    <svg width="16" height="11" viewBox="0 0 16 11" className="inline-block ml-1">
-      <path d="M11.071.653a.457.457 0 00-.304-.102.493.493 0 00-.381.178l-6.19 7.636-2.011-2.095a.463.463 0 00-.659.003.468.468 0 00.003.653l2.356 2.456a.455.455 0 00.327.14h.04a.461.461 0 00.334-.178l6.489-8.004a.462.462 0 00-.004-.687z" fill={read ? "#53bdeb" : "#8696a0"} />
-      <path d="M14.757.653a.457.457 0 00-.304-.102.493.493 0 00-.381.178l-6.19 7.636-1.2-1.25-.313.39 1.178 1.229a.455.455 0 00.327.14h.04a.461.461 0 00.334-.178l6.489-8.004a.462.462 0 00.018-.04.462.462 0 00-.004-.687l.006.688z" fill={read ? "#53bdeb" : "#8696a0"} />
-    </svg>
-  );
+const SENDER_COLORS = ["#e9a5ff", "#53bdeb", "#ffb74d", "#80cbc4", "#f48fb1", "#ce93d8", "#81d4fa"];
+function senderColor(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return SENDER_COLORS[Math.abs(h) % SENDER_COLORS.length];
 }
 
-function WABotBadge() {
+/* ================================================================== */
+/*  Tiny SVG icons                                                     */
+/* ================================================================== */
+
+function Checkmarks({ read }: { read?: boolean }) {
   return (
-    <span className="inline-flex items-center gap-0.5 ml-1.5 rounded-sm bg-[#00a884]/20 px-1 py-0 text-[9px] font-bold text-[#00a884] uppercase tracking-wider">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#00a884" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
-      Bot
-    </span>
+    <svg width="16" height="11" viewBox="0 0 16 11" className="inline-block ml-1 -mb-px">
+      <path d="M11.071.653a.457.457 0 00-.304-.102.493.493 0 00-.381.178l-6.19 7.636-2.011-2.095a.463.463 0 00-.659.003.468.468 0 00.003.653l2.356 2.456a.455.455 0 00.327.14h.04a.461.461 0 00.334-.178l6.489-8.004a.462.462 0 00-.004-.687z" fill={read ? "#53bdeb" : "#667781"} />
+      <path d="M14.757.653a.457.457 0 00-.304-.102.493.493 0 00-.381.178l-6.19 7.636-1.2-1.25-.313.39 1.178 1.229a.455.455 0 00.327.14h.04a.461.461 0 00.334-.178l6.489-8.004a.462.462 0 00.018-.04.462.462 0 00-.004-.687l.006.688z" fill={read ? "#53bdeb" : "#667781"} />
+    </svg>
   );
 }
 
@@ -128,66 +137,87 @@ export default function WhatsAppPage() {
   const chat = CONVERSATIONS.find((c) => c.id === activeChat)!;
 
   return (
-    <div className="h-screen flex flex-col bg-[#111b21]">
-      {/* Top green bar */}
-      <div className="h-[110px] bg-[#00a884] shrink-0" />
+    <div className="h-screen bg-[#e8e8e8] flex items-center justify-center p-6">
+      {/* ========= macOS Window Frame ========= */}
+      <div className="w-full max-w-[1280px] h-[calc(100vh-48px)] rounded-xl overflow-hidden shadow-2xl flex flex-col" style={{ boxShadow: "0 25px 60px rgba(0,0,0,0.35), 0 0 0 0.5px rgba(0,0,0,0.15)" }}>
 
-      {/* Main container */}
-      <div className="flex-1 -mt-[90px] flex justify-center px-4 pb-4 min-h-0">
-        <div className="w-full max-w-[1400px] flex rounded-sm overflow-hidden shadow-xl min-h-0" style={{ height: "calc(100vh - 38px)" }}>
+        {/* macOS Title Bar */}
+        <div className="h-[28px] bg-[#1f2c34] flex items-center px-3 shrink-0 relative" style={{ WebkitAppRegion: "drag" } as React.CSSProperties}>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+            <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+            <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+          </div>
+          <span className="absolute inset-0 flex items-center justify-center text-[11px] text-[#8696a0] font-normal pointer-events-none select-none">WhatsApp</span>
+        </div>
 
-          {/* ==================== LEFT PANEL ==================== */}
-          <div className="w-[420px] bg-[#111b21] border-r border-[#2a3942] flex flex-col shrink-0 min-h-0">
-            {/* Header */}
-            <div className="h-[60px] bg-[#202c33] flex items-center justify-between px-4 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00a884] to-[#00806a] flex items-center justify-center text-sm font-bold text-white">RC</div>
-              </div>
-              <div className="flex items-center gap-5 text-[#aebac1]">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" /></svg>
-              </div>
+        {/* App Content */}
+        <div className="flex-1 flex min-h-0">
+          {/* ====== Far-left icon rail ====== */}
+          <div className="w-[68px] bg-[#111b21] flex flex-col items-center py-3 gap-1 shrink-0 border-r border-[#2a3942]">
+            {/* Profile avatar */}
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#00a884] to-[#00806a] flex items-center justify-center text-[11px] font-bold text-white mb-3">RC</div>
+
+            {[
+              { d: "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", active: true },
+              { d: "M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z", active: false },
+              { d: "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M12 6v6l4 2", active: false },
+              { d: "M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z", active: false },
+              { d: "M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M9 7a4 4 0 100 8 4 4 0 000-8z M23 21v-2a4 4 0 00-3-3.87 M16 3.13a4 4 0 010 7.75", active: false },
+            ].map((icon, i) => (
+              <button key={i} className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${icon.active ? "bg-[#2a3942]" : "hover:bg-[#202c33]"}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={icon.active ? "#00a884" : "#8696a0"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={icon.d} /></svg>
+              </button>
+            ))}
+
+            <div className="flex-1" />
+
+            <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#202c33] transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8696a0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+            </button>
+          </div>
+
+          {/* ====== Chat list panel ====== */}
+          <div className="w-[340px] bg-[#111b21] border-r border-[#2a3942] flex flex-col shrink-0 min-h-0">
+            {/* Chats header */}
+            <div className="flex items-center justify-between px-5 pt-3 pb-2 shrink-0">
+              <h1 className="text-[22px] font-bold text-[#e9edef]">Chats</h1>
+              <button className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#202c33] transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8696a0" strokeWidth="1.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+              </button>
             </div>
 
             {/* Search */}
-            <div className="px-2.5 py-2 shrink-0">
+            <div className="px-3 pb-2 shrink-0">
               <div className="flex items-center gap-3 bg-[#202c33] rounded-lg px-3 py-1.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8696a0" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-                <input type="text" placeholder="Search or start new chat" className="flex-1 bg-transparent text-sm text-[#d1d7db] placeholder-[#8696a0] outline-none" readOnly />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8696a0" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+                <input type="text" placeholder="Search" className="flex-1 bg-transparent text-[13px] text-[#d1d7db] placeholder-[#8696a0] outline-none" readOnly />
               </div>
             </div>
 
-            {/* Conversation list */}
+            {/* List */}
             <div className="flex-1 overflow-y-auto min-h-0">
               {CONVERSATIONS.map((conv) => {
-                const lastMsg = conv.messages[conv.messages.length - 1];
                 const isActive = conv.id === activeChat;
-                const previewText = lastMsg.text.length > 60 ? lastMsg.text.slice(0, 60) + "…" : lastMsg.text;
                 return (
                   <button
                     key={conv.id}
                     onClick={() => setActiveChat(conv.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-3 transition-colors text-left ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
                       isActive ? "bg-[#2a3942]" : "hover:bg-[#202c33]"
                     }`}
                   >
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0" style={{ background: conv.avatarBg }}>
+                    <div className="w-[49px] h-[49px] rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0" style={{ background: conv.avatarBg }}>
                       {conv.avatar}
                     </div>
-                    <div className="flex-1 min-w-0 border-b border-[#2a3942] pb-3">
+                    <div className="flex-1 min-w-0 border-b border-[#222d34] py-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-[15px] text-[#e9edef] font-normal">{conv.name}</span>
-                        <span className="text-[11px] text-[#8696a0]">{lastMsg.time}</span>
+                        <span className="text-[16px] text-[#e9edef]">{conv.name}</span>
+                        <span className="text-[11px] text-[#8696a0]">{conv.previewDate}</span>
                       </div>
-                      <div className="flex items-center justify-between mt-0.5">
-                        <p className="text-[13px] text-[#8696a0] truncate pr-2">
-                          {lastMsg.from === "user" && <WACheckmarks read={lastMsg.read} />}
-                          {lastMsg.from !== "user" && lastMsg.from !== "bot" && <span className="text-[#8696a0]">{lastMsg.from.split(" ")[0]}: </span>}
-                          {" "}{previewText.replace(/\*/g, "")}
-                        </p>
-                        {conv.unread && (
-                          <span className="w-5 h-5 rounded-full bg-[#00a884] text-[11px] font-bold text-[#111b21] flex items-center justify-center shrink-0">{conv.unread}</span>
-                        )}
-                      </div>
+                      <p className="text-[13px] text-[#8696a0] truncate mt-0.5 pr-2">
+                        {conv.preview.replace(/\*/g, "")}
+                      </p>
                     </div>
                   </button>
                 );
@@ -195,44 +225,41 @@ export default function WhatsAppPage() {
             </div>
           </div>
 
-          {/* ==================== RIGHT PANEL (Chat) ==================== */}
-          <div className="flex-1 flex flex-col min-h-0 min-w-0">
+          {/* ====== Message area ====== */}
+          <div className="flex-1 flex flex-col min-h-0 min-w-0 bg-[#0b141a]">
             {/* Chat header */}
-            <div className="h-[60px] bg-[#202c33] flex items-center justify-between px-4 shrink-0">
+            <div className="h-[52px] bg-[#202c33] flex items-center justify-between px-4 shrink-0 border-b border-[#2a3942]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0" style={{ background: chat.avatarBg }}>
                   {chat.avatar}
                 </div>
                 <div>
-                  <div className="flex items-center">
-                    <span className="text-[15px] text-[#e9edef] font-normal">{chat.name}</span>
-                    {!chat.isGroup && <WABotBadge />}
-                  </div>
+                  <span className="text-[15px] text-[#e9edef]">{chat.name}</span>
                   <p className="text-[12px] text-[#8696a0]">
                     {chat.isGroup ? chat.members : chat.lastSeen}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-5 text-[#aebac1]">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" /></svg>
+              <div className="flex items-center gap-4 text-[#aebac1]">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
               </div>
             </div>
 
-            {/* Messages area */}
+            {/* Messages */}
             <div
-              className="flex-1 overflow-y-auto px-16 py-4 min-h-0"
+              className="flex-1 overflow-y-auto px-[10%] py-3 min-h-0"
               style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                backgroundColor: "#0b141a",
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
               }}
             >
-              <div className="max-w-[780px] mx-auto space-y-1">
+              <div className="max-w-[740px] mx-auto space-y-[3px]">
                 {/* Encryption notice */}
-                <div className="flex justify-center mb-3">
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-[#182229] px-3 py-1.5 text-[11px] text-[#8696a0]">
+                <div className="flex justify-center mb-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-md bg-[#182229] px-2.5 py-1 text-[11px] text-[#8696a0] leading-snug">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8696a0" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
-                    Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.
+                    Messages and calls are end-to-end encrypted.
                   </span>
                 </div>
 
@@ -240,40 +267,43 @@ export default function WhatsAppPage() {
                   const isUser = msg.from === "user";
                   const isBot = msg.from === "bot";
                   const senderName = !isUser && !isBot ? msg.from : null;
+                  const showSender = chat.isGroup && (senderName || isBot);
+                  const prevMsg = i > 0 ? chat.messages[i - 1] : null;
+                  const sameSenderAsPrev = prevMsg && prevMsg.from === msg.from;
 
                   return (
-                    <div key={i} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+                    <div key={i} className={`flex ${isUser ? "justify-end" : "justify-start"} ${!sameSenderAsPrev && i > 0 ? "mt-2" : ""}`}>
+                      {/* Group avatar */}
+                      {chat.isGroup && !isUser && !sameSenderAsPrev && (
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0 mr-1.5 mt-auto mb-0.5" style={{ background: isBot ? "#00a884" : senderColor(senderName ?? "") }}>
+                          {isBot ? "AI" : (senderName ?? "").split(" ").map(n => n[0]).join("")}
+                        </div>
+                      )}
+                      {chat.isGroup && !isUser && sameSenderAsPrev && <div className="w-7 shrink-0 mr-1.5" />}
+
                       <div
-                        className={`relative max-w-[65%] rounded-lg px-2.5 pt-1.5 pb-1 ${
-                          isUser
-                            ? "bg-[#005c4b]"
-                            : "bg-[#202c33]"
+                        className={`relative max-w-[60%] rounded-lg px-2 pt-1 pb-0.5 ${
+                          isUser ? "bg-[#005c4b]" : "bg-[#202c33]"
                         }`}
-                        style={{ minWidth: "80px" }}
+                        style={{ minWidth: "70px" }}
                       >
-                        {/* Sender name in group chats */}
-                        {senderName && (
-                          <p className="text-[12px] font-medium mb-0.5" style={{
-                            color: ["#e9a5ff", "#53bdeb", "#ffb74d", "#80cbc4", "#f48fb1"][
-                              CONVERSATIONS.find((c) => c.id === activeChat)!.messages
-                                .filter((m) => m.from !== "user" && m.from !== "bot")
-                                .map((m) => m.from)
-                                .filter((v, idx, a) => a.indexOf(v) === idx)
-                                .indexOf(senderName) % 5
-                            ],
-                          }}>
-                            {senderName}
+                        {/* Sender name */}
+                        {showSender && !sameSenderAsPrev && (
+                          <p className="text-[12px] font-medium mb-0.5" style={{ color: isBot ? "#00a884" : senderColor(senderName ?? "") }}>
+                            {isBot ? "Diligent AI" : senderName}
                           </p>
                         )}
-                        {isBot && chat.isGroup && (
-                          <p className="text-[12px] font-medium text-[#00a884] mb-0.5 flex items-center gap-1">
-                            Diligent AI
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#00a884" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
-                          </p>
+
+                        {/* Reply quote */}
+                        {msg.replyTo && (
+                          <div className="rounded bg-[#0b141a] border-l-[3px] border-[#00a884] px-2 py-1 mb-1">
+                            <p className="text-[11px] font-medium text-[#00a884]">{msg.replyTo.from}</p>
+                            <p className="text-[11px] text-[#8696a0] truncate">{msg.replyTo.text}</p>
+                          </div>
                         )}
 
                         {/* Message text */}
-                        <p className="text-[14px] text-[#e9edef] leading-[19px] whitespace-pre-wrap">
+                        <p className="text-[13.5px] text-[#e9edef] leading-[19px] whitespace-pre-wrap">
                           {msg.text.split(/(\*[^*]+\*)/).map((part, pi) =>
                             part.startsWith("*") && part.endsWith("*") ? (
                               <strong key={pi} className="font-semibold">{part.slice(1, -1)}</strong>
@@ -283,15 +313,15 @@ export default function WhatsAppPage() {
                           )}
                         </p>
 
-                        {/* Card attachment */}
+                        {/* Card */}
                         {msg.card && (
-                          <div className="mt-2 rounded-lg bg-[#0b141a] border border-[#2a3942] p-3">
-                            <p className="text-[12px] font-semibold text-[#00a884] mb-2">{msg.card.title}</p>
-                            <div className="space-y-1.5">
+                          <div className="mt-1.5 rounded-md bg-[#0b141a] border border-[#2a3942] p-2.5">
+                            <p className="text-[11px] font-semibold text-[#00a884] mb-1.5">{msg.card.title}</p>
+                            <div className="space-y-1">
                               {msg.card.items.map((item, ii) => (
-                                <div key={ii} className="flex items-start gap-2">
-                                  <span className="text-[#00a884] mt-0.5 shrink-0">•</span>
-                                  <p className="text-[12px] text-[#aebac1] leading-relaxed">{item}</p>
+                                <div key={ii} className="flex items-start gap-1.5">
+                                  <span className="text-[#00a884] text-[10px] mt-px shrink-0">•</span>
+                                  <p className="text-[11px] text-[#aebac1] leading-relaxed">{item}</p>
                                 </div>
                               ))}
                             </div>
@@ -299,9 +329,9 @@ export default function WhatsAppPage() {
                         )}
 
                         {/* Timestamp + checkmarks */}
-                        <div className="flex items-center justify-end gap-0.5 mt-0.5 -mb-0.5">
-                          <span className="text-[10px] text-[#ffffff99]">{msg.time}</span>
-                          {isUser && <WACheckmarks read={msg.read} />}
+                        <div className="flex items-center justify-end gap-0.5 -mb-0.5 mt-0.5">
+                          <span className="text-[10px] text-[#ffffff80]">{msg.time}</span>
+                          {isUser && <Checkmarks read={msg.read} />}
                         </div>
                       </div>
                     </div>
@@ -311,14 +341,11 @@ export default function WhatsAppPage() {
             </div>
 
             {/* Input bar */}
-            <div className="h-[62px] bg-[#202c33] flex items-center gap-2 px-4 shrink-0">
-              <button className="text-[#8696a0] hover:text-[#aebac1] transition-colors p-2">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
+            <div className="h-[52px] bg-[#202c33] flex items-center gap-2 px-3 shrink-0">
+              <button className="text-[#8696a0] hover:text-[#aebac1] transition-colors p-1.5">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" /></svg>
               </button>
-              <button className="text-[#8696a0] hover:text-[#aebac1] transition-colors p-2">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" /></svg>
-              </button>
-              <div className="flex-1 flex items-center rounded-lg bg-[#2a3942] px-3 py-2.5">
+              <div className="flex-1 flex items-center rounded-lg bg-[#2a3942] px-3 py-2">
                 <input
                   type="text"
                   placeholder="Type a message"
@@ -326,8 +353,11 @@ export default function WhatsAppPage() {
                   readOnly
                 />
               </div>
-              <button className="text-[#8696a0] hover:text-[#aebac1] transition-colors p-2">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" /><path d="M19 10v2a7 7 0 01-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" /></svg>
+              <button className="text-[#8696a0] hover:text-[#aebac1] transition-colors p-1.5">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" strokeWidth="2.5" /><line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="2.5" /></svg>
+              </button>
+              <button className="w-9 h-9 rounded-full bg-[#00a884] hover:bg-[#06cf9c] flex items-center justify-center text-white transition-colors shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
               </button>
             </div>
           </div>
